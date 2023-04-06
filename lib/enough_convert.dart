@@ -11,6 +11,7 @@ library enough_convert;
 export 'big5.dart';
 export 'dos.dart';
 export 'gbk.dart';
+export 'iso_2022_jp.dart';
 export 'koi8.dart';
 export 'latin.dart';
 export 'windows.dart';

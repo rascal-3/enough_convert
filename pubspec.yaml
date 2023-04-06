@@ -1,7 +1,7 @@
 name: enough_convert
-description: Support for character encodings / charsets / codecs missing from `dart:convert` - ISO 8859 / Latin, Windows, DOS, GBK, Big5, and KOI8 R/U.
-version: 1.6.0
-homepage: https://github.com/Enough-Software/enough_convert
+description: Support for character encodings / charsets / codecs missing from `dart:convert` - ISO 8859 / Latin, Windows, DOS, GBK, Big5, and KOI8 R/U, ISO-2022-JP.
+version: 1.6.1
+homepage: https://github.com/rascal-3/enough_convert
 
 environment:
   sdk: '>=2.12.0 <3.0.0'

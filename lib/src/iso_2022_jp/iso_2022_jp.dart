@@ -97,7 +97,7 @@ class Iso2022JpDecoder extends Converter<List<int>, String> {
     }
 
     // TODO:
-    return jcombu.convertJis(codeUnits);
+    return utf8.decode(jcombu.convertJis(codeUnits).runes.toList());
   }
 
   /// Starts a chunked conversion.

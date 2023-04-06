@@ -26,7 +26,7 @@ class Iso2022JpCodec extends Encoding {
   Iso2022JpEncoder get encoder => const Iso2022JpEncoder();
 
   @override
-  String get name => 'iso-2022-jp';
+  String get name => 'ISO-2022-JP';
 }
 
 // class Iso2022JpEncoder extends Converter<String, List<int>> {
@@ -65,7 +65,7 @@ class Iso2022JpEncoder extends Converter<String, List<int>> {
             'Only ASCII characters are supported in ISO-2022-JP encoding.');
       }
     }
-    return utf8.encode(jcombu.convertJis(result)) as Uint8List;
+    return jcombu.convertJis(result).runes.toList() as Uint8List;
     // return result;
   }
 }
@@ -116,7 +116,7 @@ class Iso2022JpDecoder extends Converter<List<int>, String> {
     }
 
     // TODO:
-    return utf8.decode(jcombu.convertJis(codeUnits).runes.toList());
+    return jcombu.convertJis(codeUnits);
   }
 
   /// Starts a chunked conversion.

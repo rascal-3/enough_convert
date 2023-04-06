@@ -6,8 +6,9 @@ homepage: https://github.com/Enough-Software/enough_convert
 environment:
   sdk: '>=2.12.0 <3.0.0'
 
-#dependencies:
-#  characters: ^1.0.0
+dependencies:
+  characters: ^1.0.0
+  jcombu: ^1.0.1
 
 dev_dependencies:
   lints: ^1.0.1

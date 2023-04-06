@@ -4,122 +4,151 @@ import 'dart:typed_data';
 import 'package:jcombu/src/jcombu_jis.dart' as jcombu;
 // import 'package:jcombu/src/jis_table.dart' as jisTable;
 
-const Iso2022JpCodec iso2022Jp = Iso2022JpCodec();
+// const Iso2022JpCodec iso2022Jp = Iso2022JpCodec();
+
+// class Iso2022JpCodec extends Encoding {
+//   const Iso2022JpCodec({bool allowInvalid = false})
+//       : _allowInvalid = allowInvalid;
+
+//   final bool _allowInvalid;
+
+//   @override
+//   String decode(List<int> codeUnits, {bool? allowInvalid}) =>
+//       Iso2022JpDecoder(allowInvalid: allowInvalid ?? _allowInvalid)
+//           .convert(codeUnits);
+
+//   @override
+//   Iso2022JpDecoder get decoder => _allowInvalid
+//       ? const Iso2022JpDecoder(allowInvalid: true)
+//       : const Iso2022JpDecoder();
+
+//   @override
+//   Iso2022JpEncoder get encoder => const Iso2022JpEncoder();
+
+//   @override
+//   String get name => 'iso-2022-jp';
+// }
 
 class Iso2022JpCodec extends Encoding {
-  const Iso2022JpCodec({bool allowInvalid = false})
-      : _allowInvalid = allowInvalid;
-
-  final bool _allowInvalid;
-
-  @override
-  String decode(List<int> codeUnits, {bool? allowInvalid}) =>
-      Iso2022JpDecoder(allowInvalid: allowInvalid ?? _allowInvalid)
-          .convert(codeUnits);
-
-  @override
-  Iso2022JpDecoder get decoder => _allowInvalid
-      ? const Iso2022JpDecoder(allowInvalid: true)
-      : const Iso2022JpDecoder();
-
-  @override
-  Iso2022JpEncoder get encoder => const Iso2022JpEncoder();
-
   @override
   String get name => 'iso-2022-jp';
+
+  @override
+  Converter<List<int>, String> get decoder => Iso2022JpDecoder();
+
+  @override
+  Converter<String, List<int>> get encoder => const Iso2022JpEncoder();
 }
 
+// class Iso2022JpEncoder extends Converter<String, List<int>> {
+//   /// Creates a new [Iso2022JpEncoder]
+//   const Iso2022JpEncoder();
+
+//   @override
+//   List<int> convert(String input) {
+//     // TODO: implement convert
+//     throw UnimplementedError();
+//   }
+
+//   /// Starts a chunked conversion.
+//   ///
+//   /// The converter works more efficiently if the given [sink] is a
+//   @override
+//   StringConversionSink startChunkedConversion(Sink<List<int>> sink) =>
+//       throw UnimplementedError();
+
+//   // Override the base-classes bind, to provide a better type.
+//   @override
+//   Stream<List<int>> bind(Stream<String> stream) => super.bind(stream);
+// }
+
 class Iso2022JpEncoder extends Converter<String, List<int>> {
-  /// Creates a new [Iso2022JpEncoder]
   const Iso2022JpEncoder();
 
   @override
   List<int> convert(String input) {
-    // TODO: implement convert
-    throw UnimplementedError();
-  }
-
-  /// Starts a chunked conversion.
-  ///
-  /// The converter works more efficiently if the given [sink] is a
-  @override
-  StringConversionSink startChunkedConversion(Sink<List<int>> sink) =>
-      throw UnimplementedError();
-
-  // Override the base-classes bind, to provide a better type.
-  @override
-  Stream<List<int>> bind(Stream<String> stream) => super.bind(stream);
-}
-
-/// This class converts ISO2022JP code units (lists of unsigned 8-bit integers)
-/// to a string.
-class Iso2022JpDecoder extends Converter<List<int>, String> {
-  /// Instantiates a new [Iso2022JpDecoder].
-  ///
-  /// The optional [allowInvalid] argument defines how [convert] deals
-  /// with invalid or unterminated character sequences.
-  ///
-  /// If it is `true` [convert] replaces invalid (or unterminated) character
-  /// sequences with the Unicode Replacement character `U+FFFD` (�). Otherwise
-  /// it throws a [FormatException].
-  const Iso2022JpDecoder({bool allowInvalid = false})
-      : _allowInvalid = allowInvalid;
-
-  final bool _allowInvalid;
-
-  /// Converts the ISO2022JP [codeUnits] (a list of unsigned 8-bit integers) to the
-  /// corresponding string.
-  ///
-  /// Uses the code units from [start] to, but no including, [end].
-  /// If [end] is omitted, it defaults to `codeUnits.length`.
-  ///
-  /// If the [codeUnits] start with the encoding of a
-  /// [_unicodeBomCharacterRune], that character is discarded.
-  @override
-  String convert(List<int> codeUnits, [int start = 0, int? end]) {
-    final length = codeUnits.length;
-    final usedEnd = RangeError.checkValidRange(start, end, length);
-    var usedStart = start;
-
-    // Fast case for ASCII strings avoids StringBuffer / decodeMap.
-    final oneBytes = _scanOneByteCharacters(codeUnits, start, usedEnd);
-    StringBuffer buffer;
-    if (oneBytes > 0) {
-      final firstPart =
-          String.fromCharCodes(codeUnits, usedStart, usedStart + oneBytes);
-      usedStart += oneBytes;
-      if (usedStart == usedEnd) {
-        return firstPart;
+    final result = <int>[];
+    for (var codeUnit in input.codeUnits) {
+      if (codeUnit <= 0x7f) {
+        result.addAll([codeUnit]);
+      } else {
+        throw UnsupportedError(
+            'Only ASCII characters are supported in ISO-2022-JP encoding.');
       }
-      buffer = StringBuffer(firstPart);
-    } else {
-      buffer = StringBuffer();
     }
-
-    // TODO:
-    return utf8.decode(jcombu.convertJis(codeUnits).runes.toList());
+    return result;
   }
-
-  /// Starts a chunked conversion.
-  ///
-  /// The converter works more efficiently if the given [sink] is a
-  /// [StringConversionSink].
-  @override
-  ByteConversionSink startChunkedConversion(Sink<String> sink) {
-    StringConversionSink stringSink;
-    if (sink is StringConversionSink) {
-      stringSink = sink;
-    } else {
-      stringSink = StringConversionSink.from(sink);
-    }
-
-    throw UnimplementedError();
-  }
-
-  // Override the base-classes bind, to provide a better type.
-  @override
-  Stream<String> bind(Stream<List<int>> stream) => super.bind(stream);
 }
+
+// /// This class converts ISO2022JP code units (lists of unsigned 8-bit integers)
+// /// to a string.
+// class Iso2022JpDecoder extends Converter<List<int>, String> {
+//   /// Instantiates a new [Iso2022JpDecoder].
+//   ///
+//   /// The optional [allowInvalid] argument defines how [convert] deals
+//   /// with invalid or unterminated character sequences.
+//   ///
+//   /// If it is `true` [convert] replaces invalid (or unterminated) character
+//   /// sequences with the Unicode Replacement character `U+FFFD` (�). Otherwise
+//   /// it throws a [FormatException].
+//   const Iso2022JpDecoder({bool allowInvalid = false})
+//       : _allowInvalid = allowInvalid;
+
+//   final bool _allowInvalid;
+
+//   /// Converts the ISO2022JP [codeUnits] (a list of unsigned 8-bit integers) to the
+//   /// corresponding string.
+//   ///
+//   /// Uses the code units from [start] to, but no including, [end].
+//   /// If [end] is omitted, it defaults to `codeUnits.length`.
+//   ///
+//   /// If the [codeUnits] start with the encoding of a
+//   /// [_unicodeBomCharacterRune], that character is discarded.
+//   @override
+//   String convert(List<int> codeUnits, [int start = 0, int? end]) {
+//     final length = codeUnits.length;
+//     final usedEnd = RangeError.checkValidRange(start, end, length);
+//     var usedStart = start;
+
+//     // Fast case for ASCII strings avoids StringBuffer / decodeMap.
+//     final oneBytes = _scanOneByteCharacters(codeUnits, start, usedEnd);
+//     StringBuffer buffer;
+//     if (oneBytes > 0) {
+//       final firstPart =
+//           String.fromCharCodes(codeUnits, usedStart, usedStart + oneBytes);
+//       usedStart += oneBytes;
+//       if (usedStart == usedEnd) {
+//         return firstPart;
+//       }
+//       buffer = StringBuffer(firstPart);
+//     } else {
+//       buffer = StringBuffer();
+//     }
+
+//     // TODO:
+//     return utf8.decode(jcombu.convertJis(codeUnits).runes.toList());
+//   }
+
+//   /// Starts a chunked conversion.
+//   ///
+//   /// The converter works more efficiently if the given [sink] is a
+//   /// [StringConversionSink].
+//   @override
+//   ByteConversionSink startChunkedConversion(Sink<String> sink) {
+//     StringConversionSink stringSink;
+//     if (sink is StringConversionSink) {
+//       stringSink = sink;
+//     } else {
+//       stringSink = StringConversionSink.from(sink);
+//     }
+
+//     throw UnimplementedError();
+//   }
+
+//   // Override the base-classes bind, to provide a better type.
+//   @override
+//   Stream<String> bind(Stream<List<int>> stream) => super.bind(stream);
+// }
 
 int _scanOneByteCharacters(List<int> units, int from, int endIndex) {
   final to = endIndex;
@@ -130,6 +159,92 @@ int _scanOneByteCharacters(List<int> units, int from, int endIndex) {
     }
   }
   return to - from;
+}
+
+class Iso2022JpDecoder extends Converter<Uint8List, String> {
+  static const ESCAPE = 0x1B;
+  static const SI = 0x0F;
+  static const SO = 0x0E;
+  static const S3 = 0x4A;
+  static const S4 = 0x4B;
+
+  static const ascii = 0;
+  static const kana = 1;
+  static const kanji = 2;
+
+  int state = ascii;
+
+  @override
+  String convert(Uint8List input) {
+    final buffer = BytesBuilder(copy: false);
+    final result = <int>[];
+
+    for (final byte in input) {
+      if (byte == ESCAPE) {
+        state = ascii;
+      } else if (byte == SI) {
+        state = kana;
+      } else if (byte == SO) {
+        state = kanji;
+      } else if (byte == S3 || byte == S4) {
+        // do nothing
+      } else if (state == ascii) {
+        result.add(byte);
+      } else if (state == kana) {
+        if (byte >= 0x21 && byte <= 0x5f) {
+          result.add(byte + 0xfec0);
+        } else {
+          result.addAll([0x3f]);
+        }
+      } else if (state == kanji) {
+        buffer.addByte(byte);
+        if (buffer.length == 2) {
+          final code = (buffer.toBytes()[0] << 8) + buffer.toBytes()[1];
+          if (code >= 0x2020 && code <= 0x206F) {
+            // half-width kana
+            result.add(code - 0x2000);
+          } else if (code >= 0x2121 && code <= 0x297E) {
+            // JIS X 0208
+            if (code >= 0x7F7F) {
+              result.addAll([0x3f, 0x3f]);
+            } else {
+              result.add(code);
+            }
+          } else {
+            result.addAll([0x3f, 0x3f]);
+          }
+          buffer.clear();
+        }
+      }
+    }
+    if (buffer.length > 0) {
+      result.addAll([0x3f]);
+    }
+    return utf8.decode(result);
+  }
+
+  @override
+  ChunkedConversionSink<Uint8List> startChunkedConversion(Sink<String> sink) {
+    return _Iso2022JpDecoderSink(sink);
+  }
+}
+
+class _Iso2022JpDecoderSink extends ChunkedConversionSink<Uint8List> {
+  final Sink<String> _sink;
+
+  final _decoder = Iso2022JpDecoder();
+
+  _Iso2022JpDecoderSink(this._sink);
+
+  @override
+  void add(Uint8List chunk) {
+    _sink.add(_decoder.convert(chunk));
+  }
+
+  @override
+  void close() {
+    _sink.close();
+  }
 }
 
 ///

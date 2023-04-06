@@ -55,7 +55,7 @@ class Iso2022JpEncoder extends Converter<String, List<int>> {
   const Iso2022JpEncoder();
 
   @override
-  List<int> convert(String input) {
+  Uint8List convert(String input) {
     final result = <int>[];
     for (var codeUnit in input.codeUnits) {
       if (codeUnit <= 0x7f) {
@@ -65,7 +65,7 @@ class Iso2022JpEncoder extends Converter<String, List<int>> {
             'Only ASCII characters are supported in ISO-2022-JP encoding.');
       }
     }
-    return utf8.encode(jcombu.convertJis(result));
+    return utf8.encode(jcombu.convertJis(result)) as Uint8List;
     // return result;
   }
 }

@@ -65,7 +65,10 @@ class Iso2022JpEncoder extends Converter<String, List<int>> {
             'Only ASCII characters are supported in ISO-2022-JP encoding.');
       }
     }
-    return jcombu.convertJis(result).runes.toList() as Uint8List;
+
+    String hexString = convertCaretStringToHex(input);
+    return hexString.runes.toList() as Uint8List;
+    // return jcombu.convertJis(result).runes.toList() as Uint8List;
     // return result;
   }
 }
@@ -179,3 +182,19 @@ bool _isTailSurrogate(int codeUnit) =>
 
 const int _oneByteLimit = 0x7f; // 7 bits
 bool _isAscii(int codeUnit) => codeUnit <= _oneByteLimit;
+
+String convertCaretStringToHex(String caretString) {
+  List<int> hexList = [];
+
+  for (int i = 0; i < caretString.length; i++) {
+    if (caretString[i] == '^' && i + 2 < caretString.length) {
+      int code = caretString.codeUnitAt(i + 1);
+      hexList.add(code - 64);
+      i += 2;
+    } else {
+      hexList.add(caretString.codeUnitAt(i));
+    }
+  }
+
+  return hexList.map((e) => '\\x${e.toRadixString(16).padLeft(2, '0')}').join();
+}

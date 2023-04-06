@@ -65,7 +65,8 @@ class Iso2022JpEncoder extends Converter<String, List<int>> {
             'Only ASCII characters are supported in ISO-2022-JP encoding.');
       }
     }
-    return result;
+    return utf8.encode(jcombu.convertJis(result));
+    // return result;
   }
 }
 

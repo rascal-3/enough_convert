@@ -4,7 +4,7 @@ import 'dart:typed_data';
 import 'package:jcombu/src/jcombu_jis.dart' as jcombu;
 // import 'package:jcombu/src/jis_table.dart' as jisTable;
 
-const Iso2022JpCodec iso2022Jp = Iso2022JpCodec();
+const Iso2022JpCodec iso2022jp = Iso2022JpCodec();
 
 class Iso2022JpCodec extends Encoding {
   const Iso2022JpCodec({bool allowInvalid = false})

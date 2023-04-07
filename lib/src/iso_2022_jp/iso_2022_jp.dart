@@ -13,6 +13,9 @@ class Iso2022JpCodec extends Encoding {
   final bool _allowInvalid;
 
   @override
+  Uint8List encode(String source) => encoder.convert(source);
+
+  @override
   String decode(List<int> codeUnits, {bool? allowInvalid}) =>
       Iso2022JpDecoder(allowInvalid: allowInvalid ?? _allowInvalid)
           .convert(codeUnits);
@@ -62,7 +65,7 @@ class Iso2022JpEncoder extends Converter<String, List<int>> {
         result.addAll([codeUnit]);
       } else {
         throw UnsupportedError(
-            'Only ASCII characters are supported in ISO-2022-JP encoding.');
+            'Not Only ASCII characters are supported in ISO-2022-JP encoding.');
       }
     }
 

@@ -6,6 +6,17 @@ import 'dart:typed_data';
 import 'package:jcombu/jcombu.dart' as jcombu;
 // import 'package:jcombu/src/jis_table.dart' as jisTable;
 
+/// An instance of the default implementation of the [Iso2022JpCodec].
+///
+/// This instance provides a convenient access to the most common ISO Latin 1
+/// use cases.
+///
+/// Examples:
+/// ```dart
+/// var encoded = iso2022jp.encode("^[$B$^$@!");
+/// var decoded = iso2022jp.decode([0x62, 0x6c, 0xe5, 0x62, 0xe6,
+///                              0x72, 0x67, 0x72, 0xf8, 0x64]);
+/// ```
 const Iso2022JpCodec iso2022jp = Iso2022JpCodec();
 
 class Iso2022JpCodec extends Encoding {
@@ -71,10 +82,10 @@ class Iso2022JpEncoder extends Converter<String, List<int>> {
       }
     }
 
-    String hexString = convertCaretStringToHex(input);
-    print('hexString: $hexString');
-    Uint8List list = hexString.runes.toList() as Uint8List;
-    print('list: $list');
+    final hexString = convertCaretStringToHex(input);
+    print('HexString: $hexString');
+    final list = hexString.runes.toList() as Uint8List;
+    print('Uint8List: $list');
     return list;
     // return jcombu.convertJis(result).runes.toList() as Uint8List;
     // return result;
@@ -143,8 +154,11 @@ class Iso2022JpDecoder extends Converter<List<int>, String> {
       buffer = StringBuffer();
     }
 
-    // TODO:
-    return jcombu.convertJis(codeUnits);
+    // TODO: Added this print
+    print('codeUnits: $codeUnits');
+    final result = jcombu.convertJis(codeUnits);
+    print('result: $result');
+    return result;
   }
 
   /// Starts a chunked conversion.

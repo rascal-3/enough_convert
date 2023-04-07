@@ -67,7 +67,10 @@ class Iso2022JpEncoder extends Converter<String, List<int>> {
     }
 
     String hexString = convertCaretStringToHex(input);
-    return hexString.runes.toList() as Uint8List;
+    print('hexString: $hexString');
+    Uint8List list = hexString.runes.toList() as Uint8List;
+    print('list: $list');
+    return list;
     // return jcombu.convertJis(result).runes.toList() as Uint8List;
     // return result;
   }

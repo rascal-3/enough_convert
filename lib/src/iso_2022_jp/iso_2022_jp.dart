@@ -1,7 +1,9 @@
+library iso2022jp;
+
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:jcombu/src/jcombu_jis.dart' as jcombu;
+import 'package:jcombu/jcombu.dart' as jcombu;
 // import 'package:jcombu/src/jis_table.dart' as jisTable;
 
 const Iso2022JpCodec iso2022jp = Iso2022JpCodec();

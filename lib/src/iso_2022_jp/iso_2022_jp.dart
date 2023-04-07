@@ -89,6 +89,23 @@ class Iso2022JpDecoder extends Converter<List<int>, String> {
 
   final bool _allowInvalid;
 
+  /// Decodes the UTF-8 [codeUnits] (a list of unsigned 8-bit integers) to the
+  /// corresponding string.
+  ///
+  /// If the [codeUnits] start with the encoding of a
+  /// [_unicodeBomCharacterRune], that character is discarded.
+  ///
+  /// If [allowInvalid] is `true` the decoder replaces invalid (or
+  /// unterminated) character sequences with the Unicode Replacement character
+  /// `U+FFFD` (�). Otherwise it throws a [FormatException].
+  ///
+  /// If [allowInvalid] is not given, it defaults to the `allowInvalid` that
+  /// was used to instantiate `this`.
+  @override
+  String decode(List<int> codeUnits, {bool? allowInvalid}) =>
+      Iso2022JpDecoder(allowInvalid: allowInvalid ?? _allowInvalid)
+          .convert(codeUnits);
+
   /// Converts the ISO2022JP [codeUnits] (a list of unsigned 8-bit integers) to the
   /// corresponding string.
   ///
